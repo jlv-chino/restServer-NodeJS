@@ -62,6 +62,30 @@ app.get('/productos/:id', verificaToken, (req, res)=>{
     
 })
 
+//*** Buscar producto/s por ID ***/
+app.get('/productos/buscar/:termino', verificaToken, (req, res)=>{
+
+    let termino = req.params.termino
+
+    let regex = new RegExp(termino, 'i')
+
+    Producto.find({nombre: regex})
+            .populate('categoria', 'nombre')
+            .exec((err, productos)=>{
+                if(err){
+                    return res.status(500).json({
+                        ok: false,
+                        err
+                    })
+                }
+
+                res.json({
+                    ok: true,
+                    productos
+                })
+            })
+})
+
 //*** Crear un producto ***/
 app.post('/productos', verificaToken, (req, res)=>{
     let body = req.body
